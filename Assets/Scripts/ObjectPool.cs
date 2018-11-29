@@ -13,12 +13,12 @@ public class ObjectPool
         m_size = size;
     }
 
-    public void PopulatePool(GameObject[] prefabs)
+    public void PopulatePool(GameObject prefab)
     {
         for (int i = 0; i < m_size; i++)
         {
 
-            GameObject tile = Object.Instantiate(prefabs[i % prefabs.Length]); //alternate between different types of tiles
+            GameObject tile = Object.Instantiate(prefab); //alternate between different types of tiles
             tile.SetActive(false);
             m_pool.Enqueue(tile);
         }

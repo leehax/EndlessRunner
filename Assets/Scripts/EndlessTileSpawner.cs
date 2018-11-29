@@ -4,16 +4,19 @@ using UnityEngine;
 public class EndlessTileSpawner : MonoBehaviour
 {
 
-    public GameObject[] m_tilePrefabs;
+    public GameObject m_tilePrefab;
     public GameObject m_player;
     private Transform m_playerTransform;
     private ObjectPool m_tilePool;
     private Queue<GameObject> m_activeTiles;
 
-    private float m_lastSpawnedTileZ = -1f;
+    private float m_lastSpawnedTileZ;
     private int m_tilePoolSize = 40;
     private int m_maxTilesOnScreen = 20;
     private float m_tileSize = 1;
+
+    private float m_lastXpos;
+    private float m_allowedXDeltaBetweenTiles = 1.5f;
 
     void Start()
     {
@@ -22,13 +25,13 @@ public class EndlessTileSpawner : MonoBehaviour
 
         m_playerTransform = m_player.transform;
 
-        m_tilePool.PopulatePool(m_tilePrefabs);
+        m_tilePool.PopulatePool(m_tilePrefab);
 
         for (int i = 0; i < m_maxTilesOnScreen; i++)
         {
 
-            m_activeTiles.Enqueue(m_tilePool.SpawnObject(new Vector3(0, 0, m_lastSpawnedTileZ + m_tileSize)));
-            m_lastSpawnedTileZ += m_tileSize;
+            m_activeTiles.Enqueue(m_tilePool.SpawnObject(new Vector3(CalculateRandomXPosition(-1f,1f), 0, m_lastSpawnedTileZ + m_tileSize*4)));
+            m_lastSpawnedTileZ += m_tileSize*4;
         }
     }
 
@@ -46,8 +49,8 @@ public class EndlessTileSpawner : MonoBehaviour
             GameObject tile = m_activeTiles.Dequeue();
             m_tilePool.Push(tile);
 
-            m_activeTiles.Enqueue(m_tilePool.SpawnObject(new Vector3(0, 0, m_lastSpawnedTileZ + m_tileSize)));
-            m_lastSpawnedTileZ += m_tileSize;
+            m_activeTiles.Enqueue(m_tilePool.SpawnObject(new Vector3(CalculateRandomXPosition(-1f, 1f), 0, m_lastSpawnedTileZ + m_tileSize*4)));
+            m_lastSpawnedTileZ += m_tileSize*4;
         }
 
     }
@@ -56,6 +59,19 @@ public class EndlessTileSpawner : MonoBehaviour
     {
 
         return m_playerTransform.position.z - tile.transform.position.z > m_tileSize * 2;
+    }
+
+    private float CalculateRandomXPosition(float min, float max)
+    {
+
+        float generatedX = Random.Range(min, max);
+
+        ////clamp the deviance from the previous random X
+        //generatedX = Mathf.Clamp(generatedX, m_lastXpos - m_allowedXDeltaBetweenTiles,
+        //    m_lastXpos + m_allowedXDeltaBetweenTiles);
+
+        m_lastXpos = generatedX;
+        return generatedX;
     }
 
 }
