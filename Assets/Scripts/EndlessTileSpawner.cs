@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class EndlessTileSpawner : MonoBehaviour
 {
@@ -8,6 +10,7 @@ public class EndlessTileSpawner : MonoBehaviour
     public GameObject m_player;
     private Transform m_playerTransform;
     private ObjectPool m_tilePool;
+    private GameObject[] m_objectPool;
     private Queue<GameObject> m_activeTiles;
 
     private float m_lastSpawnedTileZ;
@@ -27,30 +30,38 @@ public class EndlessTileSpawner : MonoBehaviour
 
         m_tilePool.PopulatePool(m_tilePrefab);
 
+        
         for (int i = 0; i < m_maxTilesOnScreen; i++)
         {
 
-            m_activeTiles.Enqueue(m_tilePool.SpawnObject(new Vector3(CalculateRandomXPosition(-1f,1f), 0, m_lastSpawnedTileZ + m_tileSize*4)));
-            m_lastSpawnedTileZ += m_tileSize*4;
+            m_activeTiles.Enqueue(m_tilePool.SpawnObject(new Vector3(0, 0,
+                m_lastSpawnedTileZ + m_tileSize * 4)));
+            m_lastSpawnedTileZ += m_tileSize * 4;
+
+
         }
     }
 
     void Update()
     {
 
-        if (m_activeTiles.Count <= 0)
-        {
-            Debug.LogWarning("No Active Tiles");
-            return;
-        }
+       if (m_activeTiles.Count <= 0)
+       {
+           Debug.LogWarning("No Active Tiles");
+           return;
+       }
 
-        if (PlayerPassedTile(m_activeTiles.Peek()))
-        {
-            GameObject tile = m_activeTiles.Dequeue();
-            m_tilePool.Push(tile);
-
-            m_activeTiles.Enqueue(m_tilePool.SpawnObject(new Vector3(CalculateRandomXPosition(-1f, 1f), 0, m_lastSpawnedTileZ + m_tileSize*4)));
-            m_lastSpawnedTileZ += m_tileSize*4;
+       if (PlayerPassedTile(m_activeTiles.Peek()))
+       {
+           GameObject tile = m_activeTiles.Dequeue();
+           m_tilePool.Push(tile);
+      
+      
+         
+          
+           m_activeTiles.Enqueue(m_tilePool.SpawnObject(new Vector3(0, 0,
+               m_lastSpawnedTileZ + m_tileSize * 4)));
+           m_lastSpawnedTileZ += m_tileSize * 4;
         }
 
     }

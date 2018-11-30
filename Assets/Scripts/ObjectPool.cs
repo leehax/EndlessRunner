@@ -18,7 +18,7 @@ public class ObjectPool
         for (int i = 0; i < m_size; i++)
         {
 
-            GameObject tile = Object.Instantiate(prefab); //alternate between different types of tiles
+            GameObject tile = Object.Instantiate(prefab); 
             tile.SetActive(false);
             m_pool.Enqueue(tile);
         }
@@ -38,12 +38,12 @@ public class ObjectPool
             Debug.LogWarning("TilePool is Empty");
             return null;
         }
-        GameObject tile = m_pool.Dequeue();
-        tile.transform.position = spawnPosition;
-        tile.transform.rotation = spawnRotation;
-        tile.SetActive(true);
+        GameObject obj = m_pool.Dequeue();
+        obj.transform.position = spawnPosition;
+        obj.transform.rotation = spawnRotation;
+        obj.SetActive(true);
  
-        return tile;
+        return obj;
     }
 
 

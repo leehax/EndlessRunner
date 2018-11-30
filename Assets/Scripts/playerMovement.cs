@@ -15,7 +15,7 @@ public class PlayerMovement : MonoBehaviour {
     private Vector3 m_consistentVelocity;
     private Vector2 m_initialMousePos;
 
-
+    private float m_inputSensitivity = 0.1f;
     private float m_previousOnCollisionZ;
 
 	private void Start ()
@@ -53,9 +53,9 @@ public class PlayerMovement : MonoBehaviour {
             }
             else if (Input.GetMouseButton(0) )
             {
-                float delta = Input.mousePosition.x - m_initialMousePos.x;
+                float delta = (Input.mousePosition.x - m_initialMousePos.x) * m_inputSensitivity;
                 newPos.x += delta * Time.deltaTime;
-                newPos.x = Mathf.Clamp(newPos.x, -1f, 1f);
+                newPos.x = Mathf.Clamp(newPos.x, -3f, 3f);
             }
         }
         else if (Application.platform == RuntimePlatform.Android)
@@ -66,7 +66,7 @@ public class PlayerMovement : MonoBehaviour {
 
                 if (touch.phase == TouchPhase.Moved)
                 {
-                    float deltaX = touch.deltaPosition.x * Time.deltaTime;
+                    float deltaX = touch.deltaPosition.x * Time.deltaTime * m_inputSensitivity;
                     newPos.x += deltaX;
                     newPos.x = Mathf.Clamp(newPos.x, -1f, 1f);
                 }
@@ -89,7 +89,12 @@ public class PlayerMovement : MonoBehaviour {
     {
         //todo: check if other is an obstacle or platform etc.
 
-        print("Jump Distance" + CalcDistanceJumped(m_transform.position.z));
+        if (other.gameObject.GetComponent<DecoyTile>().enabled)
+        {
+            other.gameObject.GetComponent<DecoyTile>().ExplodeMesh();
+        }
+
+      //  print("Jump Distance" + CalcDistanceJumped(m_transform.position.z));
         Vector3 downwardConsistentVel = m_consistentVelocity;
         downwardConsistentVel.y = -downwardConsistentVel.y;
         m_rigidBody.velocity = Vector3.Reflect(downwardConsistentVel, Vector3.up);
