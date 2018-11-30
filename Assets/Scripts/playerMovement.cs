@@ -42,21 +42,19 @@ public class PlayerMovement : MonoBehaviour {
 
     private void Update() //todo: clean up this method
     {
-
         Vector3 newPos = m_rigidBody.position;
-
         //todo: add touch input functionality
         if (Application.platform == RuntimePlatform.WindowsEditor)
         {
 
             if (Input.GetMouseButtonDown(0))
             {
-                m_initialMousePos.x = Input.GetAxis("Mouse X");
+                m_initialMousePos.x = Input.mousePosition.x;
             }
             else if (Input.GetMouseButton(0) )
             {
-                float delta = Input.GetAxis("Mouse X") - m_initialMousePos.x;
-                newPos.x += delta*Time.deltaTime;
+                float delta = Input.mousePosition.x - m_initialMousePos.x;
+                newPos.x += delta * Time.deltaTime;
                 newPos.x = Mathf.Clamp(newPos.x, -1f, 1f);
             }
         }
