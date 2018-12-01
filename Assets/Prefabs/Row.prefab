@@ -53,3 +53,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_tilePrefab: {fileID: 1012864696712512, guid: e5c902d537dab3d47bdbfae22021f411,
     type: 2}
+  m_wallPrefab: {fileID: 1671703932830090, guid: 1eac30ec7a8d02442990643d64835c54,
+    type: 2}

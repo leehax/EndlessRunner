@@ -1,11 +1,14 @@
 ﻿using System;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.Serialization;
 
 public class PlayerMovement : MonoBehaviour {
-
-
- 
+    private enum PlayState
+    {
+        Alive,
+        Dead
+    }
 
     private Rigidbody m_rigidBody;
     private Transform m_transform;
@@ -18,7 +21,11 @@ public class PlayerMovement : MonoBehaviour {
     private float m_inputSensitivity = 0.1f;
     private float m_previousOnCollisionZ;
 
-	private void Start ()
+    public AnimationCurve m_movementOnY;
+    private float m_curZ;
+
+    private PlayState m_state = PlayState.Alive;
+    private void Start ()
 	{
 	    m_rigidBody = GetComponent<Rigidbody>();
 	    m_transform = GetComponent<Transform>();
@@ -27,16 +34,27 @@ public class PlayerMovement : MonoBehaviour {
 
         Assert.IsNotNull(m_camera, "No Main Camera");
 	    m_cameraZOffset = m_camera.transform.position.z - m_transform.position.z;
-        m_consistentVelocity = new Vector3(0,5,4);
-	    m_rigidBody.velocity = m_consistentVelocity;
 
 	}
 
     private void FixedUpdate()
     {
-        Vector3 decreasedVelocity = m_rigidBody.velocity;
-        decreasedVelocity.y -= Time.deltaTime * 10f;
-        m_rigidBody.velocity = decreasedVelocity;
+
+        if (m_state == PlayState.Dead)
+        {
+            Vector3 newPos = m_rigidBody.position;
+            newPos.y -= 4f * Time.deltaTime;
+            m_rigidBody.position = newPos;
+            return;
+        }
+        else
+        {
+            Vector3 newPos = m_rigidBody.position;
+            newPos.y = m_movementOnY.Evaluate(Time.time % 1); //use animation curve for movement on Y axis
+            newPos.z += 4f * Time.deltaTime; //consistently move 4 units per second on the Z axis
+            m_rigidBody.position = newPos;
+        }
+
 
     }
 
@@ -68,7 +86,7 @@ public class PlayerMovement : MonoBehaviour {
                 {
                     float deltaX = touch.deltaPosition.x * Time.deltaTime * m_inputSensitivity;
                     newPos.x += deltaX;
-                    newPos.x = Mathf.Clamp(newPos.x, -1f, 1f);
+                    newPos.x = Mathf.Clamp(newPos.x, -3f, 3f);
                 }
             }
         }
@@ -87,17 +105,16 @@ public class PlayerMovement : MonoBehaviour {
 
     private void OnCollisionEnter(Collision other)
     {
-        //todo: check if other is an obstacle or platform etc.
 
-        if (other.gameObject.GetComponent<DecoyTile>().enabled)
+        if (other.gameObject.CompareTag("Obstacle"))
         {
-            other.gameObject.GetComponent<DecoyTile>().ExplodeMesh();
+            m_rigidBody.velocity = Vector3.zero;
+            m_state = PlayState.Dead;
+            if (other.gameObject.GetComponent<DecoyTile>().enabled)
+            {
+                other.gameObject.GetComponent<DecoyTile>().ExplodeMesh();
+            }
         }
-
-      //  print("Jump Distance" + CalcDistanceJumped(m_transform.position.z));
-        Vector3 downwardConsistentVel = m_consistentVelocity;
-        downwardConsistentVel.y = -downwardConsistentVel.y;
-        m_rigidBody.velocity = Vector3.Reflect(downwardConsistentVel, Vector3.up);
 
     }
 

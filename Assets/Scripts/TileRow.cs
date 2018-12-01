@@ -10,16 +10,20 @@ public class TileRow : MonoBehaviour
         CenterTile,
         RightTile,
         EdgeTiles,
+        EdgeTilesWithWall,
         DecoyTile
     }
 
 
     private GameObject[] m_tiles;
-
+   
 
     private DecoyTile[] m_decoyTiles;
 
+    private GameObject m_wallObstacle;
+
     [SerializeField] private GameObject m_tilePrefab;
+    [SerializeField] private GameObject m_wallPrefab;
 
     private RowTypes m_type = RowTypes.CenterTile;
 
@@ -29,6 +33,7 @@ public class TileRow : MonoBehaviour
     {
         m_tiles = new GameObject[3];
         m_decoyTiles = new DecoyTile[3];
+        m_wallObstacle = new GameObject("Wall");
 
         for (int i = 0; i < 3; i++)
         {
@@ -37,11 +42,15 @@ public class TileRow : MonoBehaviour
 
         }
 
+       
         m_tiles[0].transform.localPosition = new Vector3(-2, 0, 0); //left 
         m_tiles[1].transform.localPosition = new Vector3(0, 0, 0);  //center
         m_tiles[2].transform.localPosition = new Vector3(2, 0, 0);  //right
 
-       
+        m_wallObstacle = Instantiate(m_wallPrefab, transform, false);
+        m_wallObstacle.transform.localPosition = new Vector3(0, 1, 2);
+
+
     }
 
     void OnEnable()
@@ -51,7 +60,7 @@ public class TileRow : MonoBehaviour
 
     public void ActivateRandomType()
     {
-        ActivateWithType(Random.Range(0, 5));
+        ActivateWithType(Random.Range(0, 6));
     }
 
     private void ActivateWithType(int rowTypeAsInt)
@@ -79,6 +88,11 @@ public class TileRow : MonoBehaviour
                 ActivateEdgeTiles();
             } break;
 
+            case RowTypes.EdgeTilesWithWall:
+            {
+                ActivateEdgeTilesWithWall();
+            } break;
+
             case RowTypes.DecoyTile:
             {
                 ActivateDecoyTile();
@@ -103,6 +117,16 @@ public class TileRow : MonoBehaviour
 
     }
 
+    private void ActivateEdgeTilesWithWall()
+    {
+        ResetTiles();
+
+        m_tiles[0].SetActive(true);
+        m_tiles[2].SetActive(true);
+        m_wallObstacle.SetActive(true);
+
+    }
+
     private void ActivateDecoyTile()
     {
         ActivateEdgeTiles();
@@ -112,22 +136,25 @@ public class TileRow : MonoBehaviour
         int decoyIndex = possibleDecoyIndex[Random.Range(0, 1)];
 
         m_decoyTiles[decoyIndex].enabled = true;
-
+        m_decoyTiles[decoyIndex].gameObject.tag = "Obstacle";
 
     }
 
     private void ResetTiles()
     {
-        print(m_tiles==null);
+        
         foreach (GameObject tile in m_tiles)
         {
             tile.SetActive(false);
+            tile.tag = "Platform";
         }
 
         foreach (DecoyTile decoyTile in m_decoyTiles)
         {
             decoyTile.enabled = false;
         }
+
+        m_wallPrefab.SetActive(false);
     }
   
 
