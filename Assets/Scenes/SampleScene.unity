@@ -90,7 +90,7 @@ LightmapSettings:
     m_PVRFilteringAtrousPositionSigmaAO: 1
     m_ShowResolutionOverlay: 1
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 0
+  m_UseShadowmask: 1
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -206,7 +206,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c887c23dd10d3349accd4be8021d193, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_tilePrefab: {fileID: 1319493912516940, guid: 3bf8c68f2740f734c9235fb8e348d834,
+  m_rowPrefab: {fileID: 1319493912516940, guid: 3bf8c68f2740f734c9235fb8e348d834,
     type: 2}
   m_player: {fileID: 1652718613}
 --- !u!4 &249098040
@@ -328,7 +328,6 @@ GameObject:
   - component: {fileID: 1652718616}
   - component: {fileID: 1652718615}
   - component: {fileID: 1652718614}
-  - component: {fileID: 1652718620}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -462,21 +461,3 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!95 &1652718620
-Animator:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1652718613}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: fb099274c6fa5de48acc793d44029560, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0

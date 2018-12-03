@@ -6,7 +6,7 @@ using Random = UnityEngine.Random;
 public class EndlessTileSpawner : MonoBehaviour
 {
 
-    public GameObject m_tilePrefab;
+    public GameObject m_rowPrefab;
     public GameObject m_player;
     private Transform m_playerTransform;
     private ObjectPool m_tilePool;
@@ -28,7 +28,7 @@ public class EndlessTileSpawner : MonoBehaviour
 
         m_playerTransform = m_player.transform;
 
-        m_tilePool.PopulatePool(m_tilePrefab);
+        m_tilePool.PopulatePool(m_rowPrefab);
 
         
         for (int i = 0; i < m_maxTilesOnScreen; i++)
@@ -53,12 +53,9 @@ public class EndlessTileSpawner : MonoBehaviour
 
        if (PlayerPassedTile(m_activeTiles.Peek()))
        {
-           GameObject tile = m_activeTiles.Dequeue();
-           m_tilePool.Push(tile);
-      
-      
-         
           
+           m_tilePool.Push(m_activeTiles.Dequeue());
+      
            m_activeTiles.Enqueue(m_tilePool.SpawnObject(new Vector3(0, 0,
                m_lastSpawnedTileZ + m_tileSize * 4)));
            m_lastSpawnedTileZ += m_tileSize * 4;
