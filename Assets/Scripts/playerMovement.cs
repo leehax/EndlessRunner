@@ -60,6 +60,12 @@ public class PlayerMovement : MonoBehaviour {
         }
         else
         {
+
+
+            //save prev Y
+            //get Y delta
+            //when Y delt is positive raycast down 
+
           
             newPos.y = m_movementOnY.Evaluate(Time.time); //use animation curve for movement on Y axis, up and down in 1 second as defined in the curve
             newPos.z += 4f * Time.deltaTime; //consistently move 4 units per second on the Z axis
