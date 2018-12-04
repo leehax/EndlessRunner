@@ -6,8 +6,9 @@ using Random = UnityEngine.Random;
 public class EndlessTileSpawner : MonoBehaviour
 {
 
-    public GameObject m_rowPrefab;
-    public GameObject m_player;
+    public GameObject RowPrefab;
+    public GameObject Player;
+
     private Transform m_playerTransform;
     private ObjectPool m_tilePool;
     private GameObject[] m_objectPool;
@@ -21,14 +22,14 @@ public class EndlessTileSpawner : MonoBehaviour
 
     public AnimationCurve m_probabilityCurve;
 
-    void Start()
+    void Awake()
     {
         m_tilePool = new ObjectPool(m_tilePoolSize);
         m_activeRows = new Queue<GameObject>(m_maxTilesOnScreen);
 
-        m_playerTransform = m_player.transform;
+        m_playerTransform = Player.transform;
 
-        m_tilePool.PopulatePool(m_rowPrefab);
+        m_tilePool.PopulatePool(RowPrefab);
 
         
         for (int i = 0; i < m_maxTilesOnScreen; i++)
@@ -36,7 +37,7 @@ public class EndlessTileSpawner : MonoBehaviour
 
 
             GameObject row = m_tilePool.SpawnObject(new Vector3(0, 0,
-                m_lastSpawnedTileZ + m_tileSize * 4));
+                m_lastSpawnedTileZ + m_tileSize * GameSettings.Instance().DistanceBetweenPlatforms()));
 
 
             row.GetComponent<TileRow>().m_prevType = m_lastRowType.ToString();
@@ -51,7 +52,7 @@ public class EndlessTileSpawner : MonoBehaviour
             }
 
             m_activeRows.Enqueue(row);
-            m_lastSpawnedTileZ += m_tileSize * 4;
+            m_lastSpawnedTileZ += m_tileSize * GameSettings.Instance().DistanceBetweenPlatforms();
 
 
         }
@@ -72,7 +73,7 @@ public class EndlessTileSpawner : MonoBehaviour
             m_tilePool.Push(m_activeRows.Dequeue());
 
             GameObject row = m_tilePool.SpawnObject(new Vector3(0, 0,
-                m_lastSpawnedTileZ + m_tileSize * 4));
+                m_lastSpawnedTileZ + m_tileSize * GameSettings.Instance().DistanceBetweenPlatforms()));
 
             row.GetComponent<TileRow>().m_prevType = m_lastRowType.ToString();
             if (m_lastRowType == TileRow.RowTypes.EdgeTilesWithWall)
@@ -86,7 +87,7 @@ public class EndlessTileSpawner : MonoBehaviour
             }
 
             m_activeRows.Enqueue(row);
-            m_lastSpawnedTileZ += m_tileSize * 4;
+            m_lastSpawnedTileZ += m_tileSize * GameSettings.Instance().DistanceBetweenPlatforms();
 
         }
     }
@@ -94,7 +95,7 @@ public class EndlessTileSpawner : MonoBehaviour
     bool PlayerPassedTile(GameObject tile)
     {
 
-        return m_playerTransform.position.z - tile.transform.position.z > m_tileSize * 2;
+        return m_playerTransform.position.z - tile.transform.position.z > m_tileSize * GameSettings.Instance().DistanceBetweenPlatforms();
     }
 
 

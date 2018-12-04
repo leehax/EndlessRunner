@@ -46,7 +46,7 @@ public class PlayerMovement : MonoBehaviour {
         Assert.IsNotNull(m_camera, "No Main Camera");
 	    m_cameraZOffset = m_camera.transform.position.z - m_transform.position.z;
 	    m_movementOnY.AddKey(0f, 1f);
-	    m_movementOnY.keys = new[] {new Keyframe(0f, 1f){outTangent = 4f}, new Keyframe(0.5f, 3f), new Keyframe(1f, 1f){inTangent = -4f}};
+	    m_movementOnY.keys = new[] {new Keyframe(0f, 1f){outTangent = 8f}, new Keyframe(0.25f, 3f), new Keyframe(0.5f, 1f){inTangent = -8f}};
 	    m_movementOnY.postWrapMode = WrapMode.Loop;
 
 	    m_state = PlayState.Paused;
@@ -99,7 +99,7 @@ public class PlayerMovement : MonoBehaviour {
             }
 
            
-            newPos.z += 4f * Time.deltaTime; //consistently move 4 units per second on the Z axis
+            newPos.z += (GameSettings.Instance().DistanceBetweenPlatforms()*2) * Time.deltaTime; //consistently move distance between tiles per second
             m_rigidBody.position = newPos;
 
         }
@@ -134,7 +134,7 @@ public class PlayerMovement : MonoBehaviour {
         {
             if (Input.GetKey(KeyCode.Escape)) //todo: move scene management into a singleton or other persistent class
             {
-                Application.Quit();
+                SceneManager.LoadScene(0);
             }
             if (Input.touchCount == 1)
             {

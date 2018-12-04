@@ -45,12 +45,11 @@ public class TileRow : MonoBehaviour
         m_tiles[2].transform.localPosition = new Vector3(2, 0, 0);  //right
 
        m_wallObstacle = Instantiate(m_wallPrefab, transform, false);
-       m_wallObstacle.transform.localPosition = new Vector3(0, 1, 2);
+       m_wallObstacle.transform.localPosition = new Vector3(0f, 1f, 18.5f); //todo: magic values
 
 
     }
 
-   
 
     public RowTypes ActivateRandomType(AnimationCurve probabilityCurve)
     {
