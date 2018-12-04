@@ -6,9 +6,7 @@ public class TileRow : MonoBehaviour
 {
     public enum RowTypes
     {
-        LeftTile,
-        CenterTile,
-        RightTile,
+        SingleTile,
         EdgeTiles,
         EdgeTilesWithWall,
         DecoyTile
@@ -25,21 +23,20 @@ public class TileRow : MonoBehaviour
     [SerializeField] private GameObject m_tilePrefab;
     [SerializeField] private GameObject m_wallPrefab;
 
-    private RowTypes m_type = RowTypes.CenterTile;
+    public string m_prevType="";
 
-  
-    
+    private int m_amountOfTypes = Enum.GetValues(typeof(RowTypes)).Length;
+
     void Awake()
     {
         m_tiles = new GameObject[3];
         m_decoyTiles = new DecoyTile[3];
        
-
         for (int i = 0; i < 3; i++)
         {
             m_tiles[i] = Instantiate(m_tilePrefab, transform, false);
-            m_decoyTiles[i] = m_tiles[i].GetComponent<DecoyTile>();
-
+            m_decoyTiles[i] = m_tiles[i].GetComponent<DecoyTile>(); //cache decoy tile component to minimize GetComponent calls
+           
         }
 
        
@@ -53,37 +50,25 @@ public class TileRow : MonoBehaviour
 
     }
 
-    void OnEnable()
+   
+
+    public RowTypes ActivateRandomType(AnimationCurve probabilityCurve)
     {
-        ActivateRandomType();
+        RowTypes randomType = (RowTypes) CalculateWeightedRandom(probabilityCurve);
+        ActivateWithType(randomType);
+        return randomType;
     }
 
-    public void ActivateRandomType()
+    private void ActivateWithType(RowTypes rowType)
     {
-        ActivateWithType(Random.Range(0, 6));
-    }
-
-    private void ActivateWithType(int rowTypeAsInt)
-    {
-        RowTypes rowType = (RowTypes) rowTypeAsInt;
         switch (rowType)
         {
-            case RowTypes.LeftTile:
+            case RowTypes.SingleTile:
             {
-                ActivateSingleTile(m_tiles[0]);
+                ActivateAnySingleTile();
             } break;
 
-            case RowTypes.CenterTile:
-            {
-               ActivateSingleTile(m_tiles[1]);
-            } break;
-
-            case RowTypes.RightTile:
-            {
-                ActivateSingleTile(m_tiles[2]);
-            } break;
-
-            case RowTypes.EdgeTiles:
+          case RowTypes.EdgeTiles:
             {
                 ActivateEdgeTiles();
             } break;
@@ -100,7 +85,26 @@ public class TileRow : MonoBehaviour
         }
     }
 
+    public RowTypes ActivateLeftOrRight()
+    {
+        ResetTiles();
 
+        gameObject.name = "RowSingleTile";
+        int[] possibleTileIndex = { 0, 2 }; //0(left) or 2(right)
+
+        int tileIndex = possibleTileIndex[Random.Range(0, 2)]; //random range(int) max is exclusive 
+
+        m_tiles[tileIndex].SetActive(true);
+        return RowTypes.SingleTile;
+
+    }
+
+    private void ActivateAnySingleTile()
+    {
+        ResetTiles();
+        gameObject.name = "RowSingleTile";
+        m_tiles[Random.Range(0,3)].SetActive(true);
+    }
     private void ActivateSingleTile(GameObject tileToActivate)
     {
         ResetTiles();
@@ -160,8 +164,12 @@ public class TileRow : MonoBehaviour
 
         m_wallObstacle.SetActive(false);
     }
-  
 
+
+    private int CalculateWeightedRandom( AnimationCurve probabilityCurve)
+    {
+        return (int)probabilityCurve.Evaluate(Random.value);
+    }
     
 
 }

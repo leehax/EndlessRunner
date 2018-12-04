@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class DecoyTile : MonoBehaviour
 {
@@ -12,8 +13,23 @@ public class DecoyTile : MonoBehaviour
     private Vector3[] m_normals;
     private Vector2[] m_uvs;
 
-   
-    void OnEnable()
+    private Material m_material;
+
+
+
+
+    private Shader m_normalShader;
+    [SerializeField] private Shader m_decoyShader;
+
+    private  void Awake()
+    {
+        m_material = gameObject.GetComponent<Renderer>().material;
+        m_normalShader = m_material.shader;
+      
+    }
+
+  
+    private void OnEnable()
     {
         m_meshFilter = GetComponent<MeshFilter>();
         m_meshRenderer = GetComponent<MeshRenderer>();
@@ -24,8 +40,17 @@ public class DecoyTile : MonoBehaviour
         m_normals = m_mesh.normals;
         m_uvs = m_mesh.uv;
 
+        m_material.shader = m_decoyShader;
+
+
     }
 
+    private void OnDisable()
+    {
+        m_material.shader = m_normalShader;
+    }
+
+    
     public void ExplodeMesh()
     {
 
