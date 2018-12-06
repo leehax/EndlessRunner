@@ -1,53 +1,71 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Experimental.Rendering;
+﻿using UnityEngine;
 
-public class GameSettings : MonoBehaviour
+
+public class GameSettings : GenericSingleton<GameSettings>
 {
-
-//todo: make a generic singleton class from which GameSettings derives from
-#region singleton
-    private static GameSettings m_instance;
-
-    public static GameSettings Instance()
+    protected override void OnAwake()
     {
-        if (m_instance == null)
-        {
-            if ((m_instance = FindObjectOfType<GameSettings>()) == null)
-            {
-                GameObject obj = new GameObject();
-                obj.name = "GameSettings";
-                m_instance = obj.AddComponent<GameSettings>();
-                DontDestroyOnLoad(obj);
-            }
-            
-        }
-        return m_instance;
+        m_persistent = false;
+
     }
 
-    private void Awake()
+#region GameState
+    public enum GameStates
     {
-        if (m_instance != null && m_instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
-
-        m_instance = this;
-        DontDestroyOnLoad(gameObject);
+        Paused,
+        Playing,
+        GameOver
     }
+
+    private GameStates m_gameState = GameStates.Paused;
+
+    public GameStates GameState()
+    {
+        return m_gameState;
+    }
+
+    public void EndGame()
+    {
+        m_gameState = GameStates.GameOver;
+        OnGameEnd();
+    }
+
+    public void StartGame()
+    {
+        m_gameState = GameStates.Playing;
+    }
+
+    public void PauseGame()
+    {
+        m_gameState = GameStates.Paused;
+    }
+
+    public delegate void StateChange();
+
+    public static event StateChange OnGameEnd;
+
 #endregion
 
-
-
+#region GameProperties
     private float m_distanceBetweenPlatforms = 32f;
+    private Vector3 m_tileScale = new Vector3(1.5f, 1f, 5f);
+    private Vector3 m_wallScale = new Vector3(1f, 4f, 32f);
 
+    public Vector3 WallScale()
+    {
+        return m_wallScale;
+    }
+    public Vector3 TileScale()
+    {
+        return m_tileScale;
+    }
     public float DistanceBetweenPlatforms()
     {
         return m_distanceBetweenPlatforms;
     }
+#endregion
 
+#region Score
     private int m_score = 0;
 
 
@@ -59,9 +77,14 @@ public class GameSettings : MonoBehaviour
     public void AddScore(int amount)
     {
         m_score += amount;
+
+        if (m_score > PlayerPrefs.GetInt("HighScore",0))
+        {
+            PlayerPrefs.SetInt("HighScore",m_score);
+        }
     }
 
-
+#endregion
 
 
 

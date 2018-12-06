@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using Random = UnityEngine.Random;
 
 public class TileRow : MonoBehaviour
@@ -23,9 +22,6 @@ public class TileRow : MonoBehaviour
     [SerializeField] private GameObject m_tilePrefab;
     [SerializeField] private GameObject m_wallPrefab;
 
-    public string m_prevType="";
-
-    private int m_amountOfTypes = Enum.GetValues(typeof(RowTypes)).Length;
 
     void Awake()
     {
@@ -35,17 +31,25 @@ public class TileRow : MonoBehaviour
         for (int i = 0; i < 3; i++)
         {
             m_tiles[i] = Instantiate(m_tilePrefab, transform, false);
+            m_tiles[i].transform.localScale = GameSettings.Instance().TileScale();
             m_decoyTiles[i] = m_tiles[i].GetComponent<DecoyTile>(); //cache decoy tile component to minimize GetComponent calls
            
         }
 
-       
-        m_tiles[0].transform.localPosition = new Vector3(-2, 0, 0); //left 
+        m_tiles[0].transform.localPosition = new Vector3(-2 * GameSettings.Instance().TileScale().x, 0, 0); //left 
         m_tiles[1].transform.localPosition = new Vector3(0, 0, 0);  //center
-        m_tiles[2].transform.localPosition = new Vector3(2, 0, 0);  //right
+        m_tiles[2].transform.localPosition = new Vector3(2 * GameSettings.Instance().TileScale().x, 0, 0);  //right
 
-       m_wallObstacle = Instantiate(m_wallPrefab, transform, false);
-       m_wallObstacle.transform.localPosition = new Vector3(0f, 1f, 18.5f); //todo: magic values
+        m_wallObstacle = Instantiate(m_wallPrefab, transform, false);
+        m_wallObstacle.transform.localScale = GameSettings.Instance().WallScale();
+
+        float wallYOffset = GameSettings.Instance().WallScale().y / 2;
+        float wallZPosOffset = (GameSettings.Instance().WallScale().z / 2)
+                                + (GameSettings.Instance().TileScale().z / 2);
+
+
+
+       m_wallObstacle.transform.localPosition = new Vector3(0f, wallYOffset, wallZPosOffset);
 
 
     }
@@ -104,14 +108,7 @@ public class TileRow : MonoBehaviour
         gameObject.name = "RowSingleTile";
         m_tiles[Random.Range(0,3)].SetActive(true);
     }
-    private void ActivateSingleTile(GameObject tileToActivate)
-    {
-        ResetTiles();
-
-        gameObject.name = "RowSingleTile";
-        tileToActivate.SetActive(true);
-    }
-
+   
     private void ActivateEdgeTiles()
     {
         ResetTiles();
